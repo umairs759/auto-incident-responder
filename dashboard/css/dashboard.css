@@ -1,89 +1,203 @@
-/*
- * High-Density Dark Mode Styling for SOC Incident Operations Console.
- * Inspired by CrowdStrike Falcon and SentinelOne SecOps interfaces.
- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
-  --bg-primary: #07090e;
-  --bg-secondary: #0d121d;
-  --bg-card: #121826;
-  --bg-card-hover: #182235;
-  --border-subtle: #1e293b;
-  --border-focus: #334155;
+  --bg-canvas: #060709;
+  --bg-surface-subtle: #0b0d11;
+  --bg-surface: #101319;
+  --bg-surface-raised: #151922;
+  --bg-surface-hover: #1b202c;
   
-  --accent-critical: #ef4444;
-  --accent-high: #f97316;
-  --accent-medium: #eab308;
-  --accent-low: #3b82f6;
-  --accent-success: #10b981;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-muted: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  
+  --accent-primary: #00f2fe;
   --accent-cyan: #06b6d4;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
+  --accent-danger: #f43f5e;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-purple: #8b5cf6;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: -0.01em;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Precision Micro-Grid (Subtle Enterprise Backdrop) */
+body {
+  background-image: 
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px, 28px 28px;
 }
 
 .mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
-.cyber-panel {
-  background-color: var(--bg-card);
+/* Linear-Grade Card Architecture */
+.linear-card {
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 0.625rem;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.7);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  border-radius: 8px;
+  position: relative;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cyber-panel:hover {
-  border-color: var(--border-focus);
+.linear-card:hover {
+  border-color: var(--border-muted);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* Pulsing indicators for active threats and beacon status */
-.pulse-beacon {
-  animation: beaconPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+.linear-card-raised {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-muted);
 }
 
-@keyframes beaconPing {
-  75%, 100% {
-    transform: scale(2);
-    opacity: 0;
-  }
+/* Refined Indicator Badge */
+.pulse-emerald {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent-success);
+}
+.pulse-emerald::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background-color: var(--accent-success);
+  opacity: 0.35;
+  animation: radarPing 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-.critical-threat-border {
-  animation: criticalPulse 1.8s ease-in-out infinite alternate;
+@keyframes radarPing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.6); opacity: 0; }
 }
 
-@keyframes criticalPulse {
-  from {
-    border-color: rgba(239, 68, 68, 0.4);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
-  }
-  to {
-    border-color: rgba(239, 68, 68, 0.9);
-    box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
-  }
+/* MITRE Tile - Precision Grid State */
+.mitre-tile {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Custom SOC Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.mitre-tile:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-muted);
+  transform: translateY(-1px);
 }
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+
+.mitre-tile-active {
+  background: rgba(244, 63, 94, 0.08) !important;
+  border-color: rgba(244, 63, 94, 0.45) !important;
+  box-shadow: inset 0 0 20px rgba(244, 63, 94, 0.06), 0 0 25px rgba(244, 63, 94, 0.15);
+  animation: activeBreachPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--border-focus);
-  border-radius: 3px;
+
+@keyframes activeBreachPulse {
+  0%, 100% { border-color: rgba(244, 63, 94, 0.45); }
+  50% { border-color: rgba(244, 63, 94, 0.9); }
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+
+/* Linear-Grade Buttons */
+.btn-primary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-muted);
+}
+
+.btn-action-trigger {
+  background: linear-gradient(180deg, #f43f5e 0%, #e11d48 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-action-trigger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4);
+}
+
+/* Table Precision Styles */
+.incident-table thead tr {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.incident-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color 0.12s ease;
+}
+
+.incident-table tbody tr:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+/* Filter Pill Controls */
+.filter-pill {
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  font-family: 'JetBrains Mono', monospace;
+}
+.filter-pill.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-muted);
+  color: var(--text-primary);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-canvas); }
+::-webkit-scrollbar-thumb { background: #262c3a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3b4458; }
