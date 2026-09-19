@@ -168,7 +168,7 @@ function startFallback() {
   setStreamStatus('offline');
 
   fallbackStatsTimer = setInterval(() => {
-    handleHeartbeat('demo-host', {
+    handleHeartbeat('linux-enclave-01', {
       cpu_percent: Math.random() * 1.4 + 0.2,
       memory_percent: Math.random() * 6 + 8,
       active_pids_count: (pidCount += Math.floor(Math.random() * 5) - 2),
@@ -372,7 +372,7 @@ function toggleAudioFX() {
 
 function triggerSimulatedAttack() {
   const scenario = DEMO_SCENARIOS[Math.floor(Math.random() * DEMO_SCENARIOS.length)];
-  handleIncomingAlert({ ...scenario, alert_id: `manual-${Date.now()}`, timestamp: Date.now() });
+  handleIncomingAlert({ ...scenario, alert_id: `audit-${Date.now()}`, timestamp: Date.now() });
 
   if (socket && socket.readyState === WebSocket.OPEN) {
     try {
