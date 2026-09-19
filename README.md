@@ -207,3 +207,26 @@ Now, every time you boot your machine, the engine silently defends the system, a
 
 ## 📜 License
 Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 💖 Support My Work
+
+If you find this project, its architecture, or any of my open-source security tools helpful, consider supporting my development journey! Contributions directly help cover testing infrastructure, hardware labs, and continuous research.
+
+| Network | Supported Tokens | Wallet Address |
+| :--- | :--- | :--- |
+| **BNB Smart Chain (BEP20)** | `USDT` / `BNB` | `0xc0be3fcedd6eddf0e1c00c8d895189aaf24591a4` |
+
+> ⚠️ **Important:** Please double-check that you are sending assets strictly over the **BNB Smart Chain (BEP20)** network to prevent permanent loss of funds.
+
+---
+
+## 🙏 Thank You & Community
+
+Building open-source security tools for the cybersecurity community is driven by passion for ground-truth systems engineering. 
+
+- If you found this repository valuable, please consider giving it a **Star (⭐)** on GitHub — it significantly helps visibility!
+- Found a bug or want to contribute detection heuristics? Feel free to open an **Issue** or submit a **Pull Request**.
+
+Thank you for exploring Micro-EDR, and happy threat hunting! 🛡️🚀
