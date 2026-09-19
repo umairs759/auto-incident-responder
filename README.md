@@ -1,120 +1,209 @@
 # Autonomous Micro-EDR & Active Incident Response Engine
-> High-performance Linux endpoint detection, volatile memory forensics, and autonomous containment.
+> Enterprise-grade Linux endpoint detection, volatile memory forensics, and autonomous containment (< 15ms SLA).
 
+[![Live Demo](https://img.shields.io/badge/Live%20Console-GitHub%20Pages-success?style=for-the-badge&logo=googlechrome&logoColor=white)](https://umairs759.github.io/auto-incident-responder/dashboard/)
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com)
 [![MITRE ATT&CK](https://img.shields.io/badge/MITRE%20ATT%26CK-v14-orange.svg)](https://attack.mitre.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20Kernel%20%2F%20proc-lightgrey.svg)](https://kernel.org)
 
-An enterprise-grade, lightweight Endpoint Detection & Response (EDR) daemon paired with an active defense containment engine and real-time SecOps telemetry dashboard. Built specifically to mitigate Linux threat vectors with zero human latency (< 15ms).
+An autonomous Endpoint Detection & Response (EDR) daemon paired with an active containment engine and real-time SecOps command console. Built specifically to mitigate high-impact Linux threat vectors (reverse shells, privilege escalation, ransomware tampering) with zero-human latency.
 
 ---
 
-## Key Highlights
+## 🌐 Live Interactive SOC Console
 
-- **Low-Overhead Telemetry Sampling**: Inspects `/proc` hierarchies and socket states using an optimized non-blocking loop (< 1.5% CPU overhead).
-- **Anomalous Shell Hunter**: Discovers interactive shells (`/bin/bash`, `/bin/sh`) spawned out of non-interactive services (e.g., Nginx, Gunicorn, Python, Node.js).
-- **Active Containment Engine**:
-  1. **Atomic Process Freeze**: Transmits `SIGSTOP` across the entire process group to halt fork bombs and memory mutation.
-  2. **Volatile Forensic Snapshot**: Dumps `/proc/<pid>/status`, open file descriptors, active sockets, and environment variables into structured JSON artifacts.
-  3. **Unconditional Neutralization**: Delivers `SIGKILL` down the process tree hierarchy.
-  4. **Dynamic C2 Severance**: Injects atomic `iptables` drop rules to drop inbound and outbound traffic with the malicious IP.
-- **Ransomware Canary Traps**: Cryptographic SHA-256 tripwire monitoring on decoy files (`/tmp/.edr_canaries`) to detect unauthorized modifications.
-- **Bi-directional WebSocket Pipeline**: Real-time event streaming and operator-initiated manual containment routing.
+Experience the full telemetry console directly in your browser (no installation required):  
+👉 **[Launch Live Security Operations Dashboard](https://umairs759.github.io/auto-incident-responder/dashboard/)**
 
 ---
 
-## MITRE ATT&CK® Correlation Matrix
+## 🖥️ Command Center Overview
+
+![Micro-EDR Enterprise SOC Dashboard](./dashboard_screenshot.png)
+
+---
+
+## ⚡ Key Architectural Capabilities
+
+- **Low-Overhead Telemetry Sampling**: Audits `/proc` virtual task structures and socket states using an asynchronous, non-blocking polling loop (< 1.5% CPU overhead).
+- **Anomalous Process Tree Hunter**: Identifies and traces parent-child process anomalies (e.g., non-interactive web daemons like Nginx, Gunicorn, or Python spawning interactive `/bin/bash` shells).
+- **Atomic 4-Stage Containment Pipeline**:
+  1. **Atomic Thread Freeze (`SIGSTOP`)**: Instantly pauses the entire process tree to halt execution and prevent anti-analysis fork bombs.
+  2. **Volatile Artifact Acquisition**: Preserves open file descriptors, active sockets, dynamic environment blocks, and process status into structured JSON evidence records.
+  3. **Unconditional Neutralization (`SIGKILL`)**: Issues hard kernel signals down the execution tree to eliminate the adversary payload.
+  4. **Dynamic C2 Severance**: Injects atomic Netfilter (`iptables`) drop rules to drop inbound and outbound traffic with the malicious IP.
+- **Ransomware Canary Traps**: Deploys cryptographic SHA-256 integrity tripwires in decoy directories (`/tmp/.edr_canaries`) to detect mass file mutation.
+- **Bi-Directional Telemetry Bus**: Powered by FastAPI WebSockets, streaming kernel events to an Obsidian/Linear-grade dashboard with zero-dependency Web Audio threat alerts.
+
+---
+
+## 🛡️ MITRE ATT&CK® Enterprise Linux Mapping
 
 | Tactic | Technique ID | Technique Name | Detection Heuristic | Autonomous Containment Action |
 | :--- | :--- | :--- | :--- | :--- |
-| **Execution** | `T1059.004` | Unix Shell | Non-interactive server parent spawns interactive shell | `SIGSTOP` -> Forensic Snapshot -> `SIGKILL` Process Tree |
-| **Privilege Escalation** | `T1548.001` | Setuid and Setgid | Detection of elevated execution flags on non-root binaries | Target Process Termination (`SIGKILL`) |
-| **Discovery** | `T1046` | Network Service Discovery | Rapid socket sweep across multiple local loopback ports | Rate-limit & Flag Suspicious PID |
-| **Command & Control** | `T1071.001` | Web Protocols | Shell process holding established outbound connection | Dynamic `iptables -I OUTPUT -d <IP> -j DROP` |
-| **Impact** | `T1486` | Data Encrypted for Impact | Rapid SHA-256 hash mutation or canary file tampering | Offending PID Termination & Isolation Alert |
+| **Execution** | `T1059.004` | Unix Shell | Non-interactive daemon parent spawns interactive shell | `SIGSTOP` -> Volatile Memory Dump -> `SIGKILL` |
+| **Privilege Escalation** | `T1548.001` | Setuid and Setgid | Detection of elevated execution flags on non-root binaries | Immediate Process Tree Termination (`SIGKILL`) |
+| **Discovery** | `T1046` | Network Service Discovery | Rapid sequential socket sweep across internal ports | Rate-limit & Flag Suspicious PID |
+| **Command & Control** | `T1071.001` | Web Protocols | Shell process holding active outbound socket connection | Dynamic `iptables -I OUTPUT -d <IP> -j DROP` |
+| **Impact** | `T1486` | Data Encrypted for Impact | Cryptographic hash mutation or canary file deletion | Target PID Neutralization & Volume Lockdown |
 
 ---
 
-## Architecture Flow
+## 🏗️ System Architecture
 
 ```text
-[ Linux Host Space ]
-       │
-       ├─► /proc Telemetry (Process Tree, Open FDs, Sockets)
-       ├─► Canary Trap Files (SHA-256 File Integrity Watchdog)
-       ▼
-[ Micro-EDR Agent ] ────(Heuristic Match)────► [ Active Containment ]
-       │                                            │  ├─ SIGSTOP (Freeze)
-       │                                            │  ├─ Dump Forensics
-       │                                            │  ├─ SIGKILL (Kill Tree)
-       │                                            │  └─ iptables IP Drop
-       ▼ (Asynchronous WebSocket Client)
-[ Central Telemetry Server (FastAPI) ]
-       │
-       ├─► Relational Store (SQLite / PostgreSQL)
-       └─► WebSocket Broadcast Hub
-             ▼
-[ Interactive SecOps Dashboard ]
-       ├─ Real-Time Alert Triage Feed
-       ├─ Dynamic MITRE ATT&CK Matrix Widget
-       └─ Volatile Memory Forensic JSON Modal
+               ┌──────────────────────────────────────────────┐
+               │              Linux Kernel Space              │
+               │   /proc Virtual FS    │   Netfilter Tables   │
+               └──────────────┬──────────────────▲────────────┘
+                              │ Telemetry        │ Containment
+                              ▼                  │ (iptables / SIGKILL)
+┌────────────────────────────────────────────────┴────────────────────────┐
+│                        Micro-EDR Agent Daemon                           │
+│  ├─ Process Tree Inspector      ├─ Canary Tripwire Watchdog             │
+│  ├─ Volatile Memory Dumper      └─ Atomic Containment Engine            │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │ Encrypted WebSocket (/ws/agent)
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    FastAPI Central Telemetry Hub                        │
+│  ├─ Telemetry Aggregator        ├─ SQLite Forensic Audit Store          │
+│  └─ WebSocket Broadcast Pool    └─ Threat Scoring Engine                │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │ Real-Time Stream (/ws/dashboard)
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                   Next-Gen SecOps Command Center                        │
+│  ├─ Real-Time Incident Stream   ├─ MITRE ATT&CK Correlation Grid        │
+│  ├─ Forensic Evidence Modals    └─ Web Audio Tactical Alarm             │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
-## Quickstart & Execution
-1. Bare-Metal Linux Setup (Local Kali / Ubuntu)
-```
-# Clone and enter project directory
-cd /home/kali/Desktop/auto-incident-responder
 
-# Create virtual environment and install dependencies
+---
+
+## 🚀 Quickstart & Manual Execution
+
+### 1. Prerequisites & Installation
+
+```bash
+# Clone the repository
+git clone [https://github.com/umairs759/auto-incident-responder.git](https://github.com/umairs759/auto-incident-responder.git)
+cd auto-incident-responder
+
+# Create and activate Python virtual environment
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
 
-# Terminal 1: Launch Central Telemetry Server
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Launch Local Stack
+
+```bash
+# Terminal 1: Start Central Telemetry Server
+source venv/bin/activate
 uvicorn server.app:app --host 0.0.0.0 --port 8000
 
-# Terminal 2: Launch Micro-EDR Agent (Root required for SIGKILL & iptables)
+# Terminal 2: Start Micro-EDR Agent (Root required for /proc inspection & SIGKILL)
+source venv/bin/activate
 sudo ./venv/bin/python -m agent.agent
 ```
-Open your browser at http://127.0.0.1:8000/dashboard/ to view the SecOps Command Center.
 
-## 2. Live Adversary Attack Simulation
+Open **`http://127.0.0.1:8000/dashboard/`** in your browser to view live system telemetry.
 
-In a separate terminal, trigger safe test scenarios to validate detection and autonomous neutralization:
-``` # Execute full attack simulation suite
-python3 simulation/simulator.py --scenario all
+### 3. Run Adversary Emulation Suite
 
-# Or run individual attack scenarios
-python3 simulation/simulator.py --scenario shell
-python3 simulation/simulator.py --scenario ransomware
-python3 simulation/simulator.py --scenario recon
+In a third terminal, execute real attack behaviors to test autonomous containment:
+
+```bash
+# Execute safe adversary simulation
+python3 simulation/simulator.py
 ```
-## Deployment Options
-Docker Compose
 
-Run the entire decoupled architecture with a single command:
-```docker compose -f deploy/docker-compose.yml up --build
-```
-### Systemd Production Daemon
+---
 
-To run the agent continuously in the background on bare-metal systems:
-```sudo cp deploy/micro-edr-agent.service /etc/systemd/system/
+## 🔄 Zero-Touch Auto-Start on System Boot
+
+To run Micro-EDR 100% autonomously in the background on system power-up and automatically launch the dashboard in your default browser:
+
+### 1. Register Systemd Services
+
+```bash
+# Create Telemetry Server Service
+sudo bash -c 'cat << EOF > /etc/systemd/system/micro-edr-server.service
+[Unit]
+Description=Micro-EDR Telemetry Server
+After=network.target
+
+[Service]
+Type=simple
+User='$USER'
+WorkingDirectory='$(pwd)'
+ExecStart='$(pwd)'/venv/bin/uvicorn server.app:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# Create Agent Service
+sudo bash -c 'cat << EOF > /etc/systemd/system/micro-edr.service
+[Unit]
+Description=Micro-EDR Active Defense Engine
+After=micro-edr-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory='$(pwd)'
+ExecStart='$(pwd)'/venv/bin/python -m agent.agent
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# Reload and enable services
 sudo systemctl daemon-reload
-sudo systemctl enable --now micro-edr-agent
-sudo journalctl -u micro-edr-agent -f
-``` 
-## Interview & Engineering Talking Points
+sudo systemctl enable --now micro-edr-server.service
+sudo systemctl enable --now micro-edr.service
+```
 
-    Why /proc polling vs eBPF?
+### 2. Auto-Launch Dashboard on Desktop Login
 
-    While eBPF offers kernel-level kprobe attachments, an optimized /proc reader provides universal compatibility across legacy Linux kernels without requiring kernel-header recompilation or BTF (BPF Type Format) dependencies, maintaining a negligible CPU footprint when bounded by targeted attribute projections.
+```bash
+# Create desktop autostart entry
+mkdir -p ~/.config/autostart
+cat << EOF > ~/.config/autostart/micro-edr-dashboard.desktop
+[Desktop Entry]
+Type=Application
+Name=Micro-EDR Command Center
+Exec=bash -c "sleep 3 && xdg-open [http://127.0.0.1:8000/dashboard/](http://127.0.0.1:8000/dashboard/)"
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+EOF
+```
 
-    Race Condition Handling in Containment:
+Now, every time you boot your machine, the engine silently defends the system, and your browser opens the dashboard automatically.
 
-    To prevent malicious processes from spawning fork bombs before termination, the agent uses an atomic two-step mitigation: delivering SIGSTOP first to suspend execution threads across the process tree, taking a forensic snapshot, and finally executing SIGKILL.
+---
 
-    Volatile Artifact Retention:
+## 💡 Engineering & Architectural Decisions
 
-    Crucial incident evidence (such as dynamically loaded command-line arguments and deleted socket file descriptors) vanishes upon process exit. The agent extracts these parameters while the process is suspended, persisting forensic JSON artifacts to disk prior to termination.```
+- **Why `/proc` Polling over eBPF?**  
+  While eBPF offers low-latency kernel kprobes, an optimized `/proc` reader provides broad cross-distribution compatibility across legacy and hardened Linux environments without requiring kernel headers, Clang toolchains, or BPF Type Format (BTF) dependencies.
+- **Race Condition Prevention:**  
+  Malware often deploys anti-kill fork loops. By dispatching `SIGSTOP` first, execution state is atomically halted before forensic harvesting, followed by an unconditional `SIGKILL`.
+- **Pre-Kill Forensic Integrity:**  
+  Once a process is killed, ephemeral metadata (open sockets, unlinked binaries, memory mappings) is lost. The engine exports `/proc/<pid>/` volatile memory state directly into an immutable JSON ledger before dispatching `SIGKILL`.
+
+---
+
+## 📜 License
+Distributed under the MIT License. See `LICENSE` for more information.
