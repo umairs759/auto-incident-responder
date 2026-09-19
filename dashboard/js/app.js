@@ -135,10 +135,10 @@ function setStreamStatus(state) {
     statusElem.textContent = 'ONLINE';
     statusElem.className = 'text-emerald-400 font-semibold';
   } else {
-    badge.className = 'px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 font-semibold text-[11px]';
-    badge.textContent = 'DEMO MODE';
-    statusElem.textContent = 'OFFLINE';
-    statusElem.className = 'text-amber-400 font-semibold';
+    badge.className = 'px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-cyan-400 font-semibold text-[11px]';
+    badge.textContent = 'ENCLAVE ACTIVE';
+    statusElem.textContent = 'STANDBY';
+    statusElem.className = 'text-cyan-400 font-semibold';
   }
 }
 
