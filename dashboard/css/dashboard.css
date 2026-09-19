@@ -1,0 +1,89 @@
+/*
+ * High-Density Dark Mode Styling for SOC Incident Operations Console.
+ * Inspired by CrowdStrike Falcon and SentinelOne SecOps interfaces.
+ */
+
+:root {
+  --bg-primary: #07090e;
+  --bg-secondary: #0d121d;
+  --bg-card: #121826;
+  --bg-card-hover: #182235;
+  --border-subtle: #1e293b;
+  --border-focus: #334155;
+  
+  --accent-critical: #ef4444;
+  --accent-high: #f97316;
+  --accent-medium: #eab308;
+  --accent-low: #3b82f6;
+  --accent-success: #10b981;
+  --accent-cyan: #06b6d4;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.cyber-panel {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.625rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.cyber-panel:hover {
+  border-color: var(--border-focus);
+}
+
+/* Pulsing indicators for active threats and beacon status */
+.pulse-beacon {
+  animation: beaconPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes beaconPing {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.critical-threat-border {
+  animation: criticalPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes criticalPulse {
+  from {
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+  }
+  to {
+    border-color: rgba(239, 68, 68, 0.9);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+  }
+}
+
+/* Custom SOC Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-focus);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

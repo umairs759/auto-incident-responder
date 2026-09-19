@@ -1,0 +1,27 @@
+[Unit]
+Description=Autonomous Micro-EDR Active Defense Daemon
+Documentation=https://github.com/your-username/auto-incident-responder
+After=network.target network-online.target systemd-sysctl.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/kali/Desktop/auto-incident-responder
+ExecStart=/usr/bin/python3 -m agent.agent
+Restart=always
+RestartSec=3s
+
+# Process and capability allowances for active containment
+AmbientCapabilities=CAP_SYS_PTRACE CAP_NET_ADMIN CAP_KILL
+CapabilityBoundingSet=CAP_SYS_PTRACE CAP_NET_ADMIN CAP_KILL
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Standard Output & Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=micro-edr-agent
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  telemetry-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.server
+    container_name: edr-telemetry-server
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./edr_telemetry.db
+    volumes:
+      - edr-db-data:/app
+    restart: unless-stopped
+
+  edr-agent:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+    container_name: edr-endpoint-agent
+    # Essential host permissions for process tracing & dynamic iptables containment
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+      - NET_ADMIN
+      - KILL
+    volumes:
+      - /proc:/proc:ro
+      - /var/log/micro_edr:/var/log/micro_edr
+      - /tmp/.edr_canaries:/tmp/.edr_canaries
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - telemetry-server
+    restart: unless-stopped
+
+volumes:
+  edr-db-data:

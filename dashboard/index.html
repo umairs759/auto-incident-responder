@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous Micro-EDR | SecOps Threat Operations Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="p-6">
+
+  <!-- Top Navigation & Health Bar -->
+  <header class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-slate-800 gap-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="relative flex h-3 w-3">
+          <span class="pulse-beacon absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+        </span>
+        <h1 class="text-xl font-black tracking-tight text-white uppercase font-mono">
+          Autonomous Micro-EDR Command Center
+        </h1>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">
+        Zero-Human-Latency Detection, Forensic Snapshotting & Active Defense Engine
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 mono text-xs">
+      <div id="stream-badge" class="px-2.5 py-1 rounded border bg-slate-900 border-slate-700 text-slate-400 font-bold">
+        CONNECTING...
+      </div>
+      <div class="px-3 py-1 bg-slate-900/80 border border-slate-800 rounded">
+        HOST: <span id="endpoint-status" class="text-slate-500 font-bold">DISCONNECTED</span>
+      </div>
+      <div class="px-3 py-1 bg-slate-900/80 border border-slate-800 rounded">
+        CPU: <span id="stat-cpu" class="text-cyan-400 font-bold">0.0%</span>
+      </div>
+      <div class="px-3 py-1 bg-slate-900/80 border border-slate-800 rounded">
+        RAM: <span id="stat-mem" class="text-cyan-400 font-bold">0.0%</span>
+      </div>
+      <div class="px-3 py-1 bg-slate-900/80 border border-slate-800 rounded">
+        PIDS: <span id="stat-pids" class="text-purple-400 font-bold">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live KPI Metrics -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+    <div class="cyber-panel p-4">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Threats Flagged</div>
+      <div id="stat-threats" class="text-3xl font-black text-red-500 mt-1 mono">0</div>
+    </div>
+    <div class="cyber-panel p-4">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Autonomous Neutralizations</div>
+      <div id="stat-contained" class="text-3xl font-black text-emerald-400 mt-1 mono">0</div>
+    </div>
+    <div class="cyber-panel p-4">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Active Defense Containment SLA</div>
+      <div class="text-3xl font-black text-white mt-1 mono">&lt; 15ms</div>
+    </div>
+    <div class="cyber-panel p-4">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Engine Defense Mode</div>
+      <div class="text-3xl font-black text-sky-400 mt-1 mono">ACTIVE_ENFORCE</div>
+    </div>
+  </section>
+
+  <!-- MITRE ATT&CK Matrix Widget -->
+  <section class="cyber-panel p-5 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xs font-bold tracking-widest text-slate-300 uppercase">
+        MITRE ATT&CK® Active Kill-Chain Mapping
+      </h2>
+      <span class="text-[11px] mono text-slate-500">Enterprise Linux Matrix (v14)</span>
+    </div>
+    <div id="mitre-matrix-grid" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+  </section>
+
+  <!-- Real-Time Telemetry Stream -->
+  <section class="cyber-panel p-5">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xs font-bold tracking-widest text-slate-300 uppercase">
+        Real-Time Incident Stream & Telemetry Ledger
+      </h2>
+      <span class="text-[11px] mono text-slate-500">Kernel & /proc Ingestion Bus</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider mono">
+            <th class="p-3">Time</th>
+            <th class="p-3">Severity</th>
+            <th class="p-3">Process Target</th>
+            <th class="p-3">Heuristic Anomaly</th>
+            <th class="p-3">MITRE ID</th>
+            <th class="p-3">Response Status</th>
+            <th class="p-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="alerts-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Forensic Artifact Modal -->
+  <div id="forensics-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-lg max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+      <div class="flex justify-between items-center p-4 border-b border-slate-800">
+        <h3 class="text-sm font-bold text-white mono flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span> FORENSIC MEMORY & PROCESS ARTIFACT
+        </h3>
+        <button onclick="closeForensicModal()" class="text-slate-400 hover:text-white mono text-sm px-2 py-1">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto">
+        <pre id="forensic-json-viewer" class="text-xs mono text-emerald-400 bg-black/80 p-4 rounded border border-slate-800 whitespace-pre-wrap overflow-x-auto"></pre>
+      </div>
+      <div class="p-3 border-t border-slate-800 text-right">
+        <button onclick="closeForensicModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs mono rounded text-slate-200 transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mitre_matrix.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

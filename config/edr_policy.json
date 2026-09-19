@@ -1,0 +1,37 @@
+{
+  "hostname": "edr-endpoint-01",
+  "log_level": "INFO",
+  "detection": {
+    "suspicious_parent_binaries": [
+      "nginx", "apache2", "httpd", "php-fpm", "java", "python3",
+      "gunicorn", "uwsgi", "node", "mysqld", "postgres", "redis-server",
+      "cron", "crond", "sshd"
+    ],
+    "shell_binaries": ["sh", "bash", "dash", "zsh", "ash", "ksh"],
+    "reverse_shell_ports": [4444, 1337, 8443, 9001, 6666, 31337],
+    "canary_paths": ["/etc/passwd", "/etc/shadow", "/opt/edr_canary"],
+    "canary_modification_threshold": 3,
+    "canary_window_secs": 10,
+    "port_scan_distinct_port_threshold": 15,
+    "scan_window_secs": 5,
+    "process_poll_interval_secs": 1.0,
+    "network_poll_interval_secs": 1.0,
+    "canary_hash_interval_secs": 2.0
+  },
+  "containment": {
+    "enabled": true,
+    "auto_kill": true,
+    "auto_network_isolate": true,
+    "forensics_capture_timeout_secs": 2.0,
+    "firewall_backend": "nftables",
+    "forensics_output_dir": "/var/log/micro-edr/forensics"
+  },
+  "shipper": {
+    "server_ws_url": "ws://localhost:8000/ws/agent",
+    "server_http_url": "http://localhost:8000",
+    "reconnect_backoff_min_secs": 1.0,
+    "reconnect_backoff_max_secs": 30.0,
+    "heartbeat_interval_secs": 15.0,
+    "ring_buffer_max_events": 5000
+  }
+}
